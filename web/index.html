@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elpriskollen</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f6f55%27/%3E%3Cpath d=%27M18 4 8 18h7l-2 10 11-15h-7z%27 fill=%27%23fff%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=31">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Elpriskollen</h1>
+    <p class="lead">Jämför elhandelsavtal mot din faktiska förbrukning och få råd om vad som lönar sig.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sidor">
+  <div class="wrap tablist" role="tablist">
+    <button class="tab" role="tab" id="tab-oversikt" data-tab="oversikt" aria-controls="panel-oversikt" aria-selected="true" type="button">Överblick</button>
+    <button class="tab" role="tab" id="tab-erbjudanden" data-tab="erbjudanden" aria-controls="panel-erbjudanden" aria-selected="false" tabindex="-1" type="button">Erbjudanden <span class="count" id="count-offers" hidden></span></button>
+    <button class="tab" role="tab" id="tab-jamforelse" data-tab="jamforelse" aria-controls="panel-jamforelse" aria-selected="false" tabindex="-1" type="button">Jämförelse</button>
+    <button class="tab" role="tab" id="tab-historik" data-tab="historik" aria-controls="panel-historik" aria-selected="false" tabindex="-1" type="button">Historik</button>
+    <button class="tab" role="tab" id="tab-data" data-tab="data" aria-controls="panel-data" aria-selected="false" tabindex="-1" type="button">Data</button>
+  </div>
+</nav>
+
+<div class="wrap filterbar" id="filterbar" aria-label="Filter">
+  <details id="filter-details">
+    <summary id="filter-summary">Filter</summary>
+    <div class="settings">
+      <fieldset>
+        <legend>Anläggning</legend>
+        <select id="sel-anl" class="select" aria-label="Anläggning" disabled></select>
+      </fieldset>
+      <fieldset>
+        <legend>År</legend>
+        <select id="sel-year" class="select" aria-label="År" disabled></select>
+      </fieldset>
+      <fieldset>
+        <legend>Elhandelsbolag</legend>
+        <select id="sel-bolag" class="select" aria-label="Elhandelsbolag" disabled></select>
+        <select id="sel-typ" class="select" aria-label="Avtalstyp" disabled></select>
+      </fieldset>
+      <fieldset>
+        <legend>Visa belopp</legend>
+        <div class="seg" role="radiogroup" id="seg-vat"></div>
+      </fieldset>
+    </div>
+  </details>
+</div>
+
+<main class="wrap">
+  <div class="panel" role="tabpanel" id="panel-oversikt" aria-labelledby="tab-oversikt">
+    <div class="card empty-note" id="empty-oversikt" hidden></div>
+  <section class="card overview" id="overview-card" aria-labelledby="h-ov" hidden>
+    <h2 id="h-ov">Överblick</h2>
+    <div class="quote">
+      <div class="quote-title">Säljare på telefon? Skriv in priset de ger för senaste månaden:</div>
+      <div class="quote-form">
+        <div class="field"><label>Pris (öre/kWh)
+          <input id="q-ore" type="text" inputmode="decimal" placeholder="t.ex. 95,2" autocomplete="off"></label></div>
+        <div class="field"><label>Priset är
+          <select id="q-moms"><option value="1">Inkl. moms</option><option value="0">Exkl. moms</option></select></label></div>
+        <div class="field"><label>Typ
+          <select id="q-typ"><option value="rorligt">Rörligt (spot + påslag)</option><option value="fast">Fast pris</option></select></label></div>
+        <div class="field"><label>Säljaren räknade på (kWh/år)
+          <input id="q-kwh" type="text" inputmode="decimal" placeholder="20000 om okänt" autocomplete="off"></label></div>
+      </div>
+      <p class="muted small">Säljarens pris räknas som ett totalpris: det innehåller redan alla påslag, avgifter och rabatter, vanligtvis räknade på en standardförbrukning. Därför visas det under Jämförpris i tabellen. Fråga gärna vilken förbrukning (kWh/år) de räknat på.</p>
+      <div id="quote-result"></div>
+      <details class="quote-details" id="q-details">
+        <summary>Vad ingår i erbjudandet? (valfritt, för anteckning och jämförelse)</summary>
+        <p class="muted small">Behövs inte för beräkningen eftersom priset ovan redan är ett totalpris. Anteckna vad säljaren säger ingår så syns det i jämförelsen, och du får en kontroll av att det stämmer med priset. Du kan också spara det som ett erbjudande under fliken Erbjudanden.</p>
+        <div class="fields">
+          <div class="field span2"><label>Bolag / säljare <input data-q="namn" type="text" placeholder="t.ex. Bolagsnamn" autocomplete="off"></label></div>
+          <div class="field"><label>Detaljerna är angivna
+            <select data-q="inklMoms"><option value="0">Exkl. moms</option><option value="1">Inkl. moms</option></select></label></div>
+          <div class="field"><label>Fastpris (öre/kWh) <input data-q="fastpris" type="text" inputmode="decimal" placeholder="bara för fast pris" autocomplete="off"></label></div>
+          <div class="field"><label>Fast påslag (öre/kWh) <input data-q="paslag" type="text" inputmode="decimal" placeholder="t.ex. 3" autocomplete="off"></label></div>
+          <div class="field"><label>Rörliga kostnader (öre/kWh) <input data-q="rorliga" type="text" inputmode="decimal" placeholder="varierar månadsvis" autocomplete="off"></label></div>
+          <div class="field"><label>Elcertifikat (öre/kWh) <input data-q="elcert" type="text" inputmode="decimal" placeholder="0 om det ingår" autocomplete="off"></label></div>
+          <div class="field"><label>Månadsavgift (kr/mån) <input data-q="manadsavgift" type="text" inputmode="decimal" placeholder="t.ex. 39" autocomplete="off"></label></div>
+          <div class="field"><label>Årsavgift (kr/år) <input data-q="arsavgift" type="text" inputmode="decimal" placeholder="t.ex. 662" autocomplete="off"></label></div>
+          <div class="field"><label>Rabatt (öre/kWh) <input data-q="rabattOre" type="text" inputmode="decimal" autocomplete="off"></label></div>
+          <div class="field"><label>Rabatt (kr/mån) <input data-q="rabattKr" type="text" inputmode="decimal" autocomplete="off"></label></div>
+          <div class="field span2"><label>Anteckning <input data-q="anteckning" type="text" placeholder="t.ex. vem som ringde, uppsägningstid, villkor" autocomplete="off"></label></div>
+        </div>
+        <div class="row quote-actions">
+          <button class="btn primary" id="q-save" type="button">Spara som erbjudande</button>
+          <button class="btn" id="q-clear" type="button">Rensa säljarens erbjudande</button>
+          <span id="q-saved" class="muted small" role="status"></span>
+        </div>
+      </details>
+    </div>
+    <div id="overview"></div>
+  </section>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-erbjudanden" aria-labelledby="tab-erbjudanden" hidden>
+  <section class="card" aria-labelledby="h-off">
+    <div class="card-head">
+      <h2 id="h-off">Erbjudanden att jämföra</h2>
+      <div class="row">
+        <button class="btn primary" id="btn-add" type="button">+ Lägg till erbjudande</button>
+        <button class="btn" id="btn-export" type="button">Exportera</button>
+        <label class="btn" for="file-offers">Importera</label>
+        <input type="file" id="file-offers" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <p class="muted small">Fyll i villkoren från elhandlarens erbjudande. Jämförelsesajter (t.ex. elskling.se, elpriskollen.se) anger komponenterna oftast <strong>exkl. moms</strong> och bara totalen inkl. moms. Avgifter och kampanjrabatter räknas per anläggning (de har separata avtal). Ange den förbrukning och den spotmånad sajten räknade på, så stämmer kontrollpriset under erbjudandet med sajtens jämförpris. Dina erbjudanden sparas i den här webbläsaren.</p>
+    <div id="offers" class="offers"></div>
+  </section>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-jamforelse" aria-labelledby="tab-jamforelse" hidden>
+    <div class="card empty-note" id="empty-jamforelse" hidden></div>
+  <section class="card" id="compare-card" aria-labelledby="h-res">
+    <h2 id="h-res">Råd och jämförelse</h2>
+    <div class="settings compare-settings">
+      <fieldset>
+        <legend>Dina fakturor</legend>
+        <div class="seg" role="radiogroup" id="seg-base"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Erbjudanden</legend>
+        <div class="seg" role="radiogroup" id="seg-offer"></div>
+      </fieldset>
+    </div>
+    <p class="muted small">Erbjudandena prisas över din faktiska förbrukning och spotpriset de senaste 12 månaderna (inom valda filter; efter ett filter på år eller bolag de månader som finns i urvalet). Alla villkor och rabatter antas gälla hela perioden.</p>
+    <p class="muted small"><strong>Rabatter slås av och på var för sig.</strong> "Dina fakturor: Utan rabatt" räknar om dina fakturor till ordinarie pris, alltså som det blir när dina rabatter (t.ex. hos Vattenfall) har gått ut. "Erbjudanden: Med/Utan rabatt" styr om erbjudandenas egna kampanjrabatter räknas med. Välj t.ex. fakturor utan rabatt och erbjudanden med rabatt för att se vad som lönar sig när din rabatt går ut.</p>
+    <div id="results"></div>
+  </section>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-historik" aria-labelledby="tab-historik" hidden>
+    <div class="card empty-note" id="empty-historik" hidden></div>
+  <section class="card" aria-labelledby="h-hist" id="history-card" hidden>
+    <h2 id="h-hist">Historik <span id="hist-scope" class="muted scope"></span></h2>
+    <p class="muted small">Analys av vad fakturorna visar över tid. Följer valen i filtret (anläggning, år, bolag och moms).</p>
+    <div id="history"></div>
+  </section>
+  </div>
+
+  <div class="panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden>
+  <section class="card" id="data-card" aria-labelledby="h-data">
+    <h2 id="h-data">Data</h2>
+    <div id="dropzone" class="dropzone">
+      <p><strong>Dra in <code>data.json</code> hit</strong> eller välj filen.</p>
+      <div class="row">
+        <label class="btn primary" for="file-data">Välj data.json</label>
+        <input type="file" id="file-data" accept=".json,application/json" hidden>
+        <button class="btn" id="btn-demo" type="button">Prova med demodata</button>
+        <button class="btn" id="btn-server-data" type="button" hidden>Läs in data.json från servern</button>
+      </div>
+      <p class="muted small">Filen skapas av <code>python3 export_data.py</code>. Den läses bara i din webbläsare och skickas aldrig någonstans.</p>
+    </div>
+    <div id="data-status" class="status" hidden></div>
+  </section>
+  </div>
+</main>
+
+<footer class="wrap foot">
+  <p class="muted small">Elpriskollen räknar på historisk förbrukning och månadsmedelspris på elbörsen. Det är ett beslutsunderlag och inte ett löfte om framtida kostnader. Kontrollera alltid villkoren hos elhandlaren.</p>
+</footer>
+
+<script src="calc.js?v=31"></script>
+<script src="demo-data.js?v=31"></script>
+<script src="app.js?v=31"></script>
+</body>
+</html>

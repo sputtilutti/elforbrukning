@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+tmp/
+data.json
+config.mk
+id_name.json
+.DS_Store
