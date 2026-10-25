@@ -120,12 +120,30 @@
     render();
   }
 
+  /** Läser in en fil: delningsfil (data + erbjudanden + inställningar), data.json eller en lista med erbjudanden. */
   function loadFile(file) {
     const reader = new FileReader();
     reader.onload = () => {
-      try { setData(JSON.parse(reader.result), { manual: true }); } catch (e) { alert(`Kunde inte läsa filen: ${e.message}`); }
+      try {
+        const pkg = C.parsePackage(JSON.parse(reader.result));
+        if (pkg.offers && state.offers.length && !confirm(`Ersätta dina ${state.offers.length} sparade erbjudanden med de ${pkg.offers.length} i filen?`)) return;
+        if (pkg.offers) state.offers = pkg.offers.map((o) => newOffer(Object.assign({}, o, { id: o.id || uid() })));
+        if (pkg.settings) state.settings = normalizeSettings(Object.assign({}, pkg.settings));
+        if (pkg.data) setData(pkg.data, { manual: true });
+        else { persist(); render(); renderOffers(); }
+        if (pkg.offers) renderOffers();
+      } catch (e) { alert(`Kunde inte läsa filen: ${e.message}`); }
     };
     reader.readAsText(file);
+  }
+
+  function download(name, obj) {
+    const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   async function fetchJson(url) {
@@ -162,6 +180,7 @@
       `<span class="chip">${d.anlaggningar.length} anläggningar</span>`,
       `<span class="chip">${esc(months[0])} till ${esc(months[months.length - 1])}</span>`,
       `<span class="chip">Elområde ${esc(d.elomrade || '')}</span>`,
+      '<button class="btn small primary" id="btn-share" type="button">Spara allt som en fil</button>',
       '<button class="btn small" id="btn-change" type="button">Byt data</button>',
     ].join('');
   }
@@ -837,6 +856,10 @@
     });
     $('#data-status').addEventListener('click', (e) => {
       if (e.target.id === 'btn-change') { state.data = null; render(); showTab('data'); }
+      if (e.target.id === 'btn-share') {
+        if (state.data && state.data.demo) { alert('Det här är demodata. Läs in din riktiga data först.'); return; }
+        download('elpriskollen.json', C.buildPackage(state.data, state.offers, state.settings));
+      }
     });
     const dz = $('#dropzone');
     ['dragenter', 'dragover'].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add('over'); }));
@@ -927,16 +950,7 @@
       const file = e.target.files[0];
       e.target.value = '';
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const list = JSON.parse(reader.result);
-          if (!Array.isArray(list)) throw new Error('Förväntade en lista med erbjudanden.');
-          state.offers = list.map((o) => newOffer(Object.assign({}, o, { id: o.id || uid() })));
-          saveOffers(); renderOffers(); renderResults();
-        } catch (err) { alert(`Kunde inte läsa erbjudandena: ${err.message}`); }
-      };
-      reader.readAsText(file);
+      loadFile(file);
     });
   }
 

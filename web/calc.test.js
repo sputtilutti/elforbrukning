@@ -652,3 +652,17 @@ test('windowMix: varnar när fönstret blandar bolag och avtalstyper', () => {
   assert.equal(ren.mixed, false);
   assert.equal(ren.olika, 0);
 });
+
+test('delningspaket: bygg och läs in data, erbjudanden och inställningar', () => {
+  const data = { manader: [], anlaggningar: [], spot: {} };
+  const pkg = C.buildPackage(data, [{ id: 'a', namn: 'X' }], { anl: 'A', dataSource: 'manual', baseline: 'betalt' });
+  assert.equal(pkg.format, 'elpriskollen-paket');
+  assert.equal(pkg.settings.dataSource, undefined);          // hör till mottagarens webbläsare
+  const back = C.parsePackage(JSON.parse(JSON.stringify(pkg)));
+  assert.deepEqual(back.offers, [{ id: 'a', namn: 'X' }]);
+  assert.equal(back.settings.anl, 'A');
+  assert.deepEqual(back.data, data);
+  assert.equal(C.parsePackage(data).data, data);               // vanlig data.json
+  assert.deepEqual(C.parsePackage([{ id: 'b' }]).offers, [{ id: 'b' }]);   // gammal erbjudandelista
+  assert.throws(() => C.parsePackage({ foo: 1 }));
+});

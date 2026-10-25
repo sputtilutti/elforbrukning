@@ -617,6 +617,31 @@
     return { mixed: per.length > 1, periods: per, current, olika };
   }
 
+  const PACKAGE_FORMAT = 'elpriskollen-paket';
+
+  /**
+   * Allt som behövs för att dela en uppsättning i EN fil: förbrukningsdata, sparade erbjudanden och inställningar
+   * (filter, säljarens pris m.m.). Mottagaren läser in filen under fliken Data.
+   */
+  function buildPackage(data, offers, settings) {
+    const st = Object.assign({}, settings);
+    delete st.dataSource;
+    return { format: PACKAGE_FORMAT, version: 1, skapad: new Date().toISOString().slice(0, 10), data: data || null, offers: offers || [], settings: st };
+  }
+
+  /**
+   * Läser en inläst JSON och avgör vad den är: ett delningspaket, en vanlig data.json (har `manader`) eller en lista
+   * med erbjudanden. Ger { data, offers, settings } där det som saknas är null. Kastar fel för okänt innehåll.
+   */
+  function parsePackage(obj) {
+    if (Array.isArray(obj)) return { data: null, offers: obj, settings: null };
+    if (obj && obj.format === PACKAGE_FORMAT) {
+      return { data: obj.data || null, offers: Array.isArray(obj.offers) ? obj.offers : null, settings: obj.settings || null };
+    }
+    if (obj && Array.isArray(obj.manader)) return { data: obj, offers: null, settings: null };
+    throw new Error('Filen är varken en delningsfil, en data.json eller en lista med erbjudanden.');
+  }
+
   const TYP_LABEL = { rorligt: 'rörligt', fast: 'fast pris', 'okänt': 'okänd typ' };
   const typLabel = (t) => t.split(' + ').map((x) => TYP_LABEL[x] || x).join(' + ');
 
@@ -691,5 +716,5 @@
     return { months, years, bolag, perAnl, total, tips, periods: periods(months) };
   }
 
-  return { num, toExkl, monthCost, windowMonths, compare, bestPerAnl, bestSingle, advice, priceSeries, monthlyRows, periods, typLabel, history, windowMix, fastVsRorligt, referencePrice, rorligaHistory, filterData, kwhBasis, arsavgiftKr, energyOre, latestMonth, latestSpotMonth, currentOffer, overview, offerLatest, quoteOffer, quoteDetails, detailsCheck, quoteTips, DEFAULT_VAT };
+  return { num, toExkl, monthCost, windowMonths, compare, bestPerAnl, bestSingle, advice, priceSeries, monthlyRows, periods, typLabel, history, buildPackage, parsePackage, windowMix, fastVsRorligt, referencePrice, rorligaHistory, filterData, kwhBasis, arsavgiftKr, energyOre, latestMonth, latestSpotMonth, currentOffer, overview, offerLatest, quoteOffer, quoteDetails, detailsCheck, quoteTips, DEFAULT_VAT };
 });

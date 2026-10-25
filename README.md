@@ -232,6 +232,14 @@ att du slipper börja om varje gång (bara för anrop från din egen dator, aldr
   alla fält) och finns kvar nästa gång du kör servern, oavsett webbläsare, adress eller port. De sparas också i
   webbläsaren som reserv. Filen gäller före webbläsarens kopia. "Exportera" ger en separat säkerhetskopia.
 
+### Dela allt i en fil
+Under fliken *Data* finns knappen **Spara allt som en fil**. Den skapar `elpriskollen.json` med förbrukningen (månadsaggregat per
+anläggning, inga adresser, ID eller filnamn), dina sparade erbjudanden och inställningar (filter, säljarens pris m.m.). Skicka
+filen till den du vill dela med. Den öppnar webbsidan (t.ex. på GitHub Pages), drar in filen under *Data* och får samma vy.
+Filen innehåller dina anläggningsnamn, belopp och förbrukning, så dela den bara med någon du litar på och lägg den inte i git.
+Inläsningen ersätter mottagarens sparade erbjudanden (efter en bekräftelse). En vanlig `data.json` eller en gammal
+erbjudandefil går också att läsa in.
+
 Med en vanlig webbserver (`python3 -m http.server`) eller GitHub Pages sparas inställningar, erbjudanden och inläst
 data bara i webbläsaren (`localStorage`, bundet till adress och port). Med En vanlig server skickar dessutom ingen cachekontroll, så webbläsaren kan fortsätta visa gamla versioner
 av `app.js` (t.ex. filter som inte går att välja) tills du gör en hård omladdning (Cmd+Shift+R).

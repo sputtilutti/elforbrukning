@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elpriskollen</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231f6f55%27/%3E%3Cpath d=%27M18 4 8 18h7l-2 10 11-15h-7z%27 fill=%27%23fff%27/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
 <header class="top">
@@ -146,14 +146,14 @@
   <section class="card" id="data-card" aria-labelledby="h-data">
     <h2 id="h-data">Data</h2>
     <div id="dropzone" class="dropzone">
-      <p><strong>Dra in <code>data.json</code> hit</strong> eller välj filen.</p>
+      <p><strong>Dra in <code>elpriskollen.json</code> (eller <code>data.json</code>) hit</strong> eller välj filen.</p>
       <div class="row">
-        <label class="btn primary" for="file-data">Välj data.json</label>
+        <label class="btn primary" for="file-data">Välj fil</label>
         <input type="file" id="file-data" accept=".json,application/json" hidden>
         <button class="btn" id="btn-demo" type="button">Prova med demodata</button>
         <button class="btn" id="btn-server-data" type="button" hidden>Läs in data.json från servern</button>
       </div>
-      <p class="muted small">Filen skapas av <code>python3 export_data.py</code>. Den läses bara i din webbläsare och skickas aldrig någonstans.</p>
+      <p class="muted small"><code>elpriskollen.json</code> är en delningsfil med förbrukning, erbjudanden och inställningar: den skapas med knappen <em>Spara allt som en fil</em> (efter att datat lästs in) och läses in här av den som du delar den med. <code>data.json</code> skapas av <code>python3 export_data.py</code>. Filerna läses bara i din webbläsare och skickas aldrig någonstans.</p>
     </div>
     <div id="data-status" class="status" hidden></div>
   </section>
@@ -164,8 +164,8 @@
   <p class="muted small">Elpriskollen räknar på historisk förbrukning och månadsmedelspris på elbörsen. Det är ett beslutsunderlag och inte ett löfte om framtida kostnader. Kontrollera alltid villkoren hos elhandlaren.</p>
 </footer>
 
-<script src="calc.js?v=31"></script>
-<script src="demo-data.js?v=31"></script>
-<script src="app.js?v=31"></script>
+<script src="calc.js?v=32"></script>
+<script src="demo-data.js?v=32"></script>
+<script src="app.js?v=32"></script>
 </body>
 </html>
